@@ -63,7 +63,10 @@
             NSString *fileType = (NSString*)[[[fileName substringFromIndex:5] componentsSeparatedByString: @";"] objectAtIndex:0];
             fileType = (NSString*)[[fileType componentsSeparatedByString: @"/"] lastObject];
             NSString *base64content = (NSString*)[[fileName componentsSeparatedByString: @","] lastObject];
-            NSData *fileData = [NSData dataFromBase64String:base64content];
+            //Commented by Mayank when cordova platform updated to 6+ [May 05, 2017]
+
+            //NSData *fileData = [NSData dataFromBase64String:base64content];
+            NSData* fileData = [[NSData alloc] initWithBase64EncodedString:base64content options:0];
             file = [NSURL fileURLWithPath:[self storeInFile:[NSString stringWithFormat:@"%@.%@", @"file", fileType] fileData:fileData]];
         } else {
             // assume anywhere else, on the local filesystem
