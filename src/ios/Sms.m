@@ -3,11 +3,6 @@
 @implementation Sms
 @synthesize callbackID;
 
-- (CDVPlugin *)initWithWebView:(UIWebView *)theWebView {
-    self = (Sms *)[super initWithWebView:theWebView];
-    return self;
-}
-
 - (bool)isSMSAvailable {
     Class messageClass = (NSClassFromString(@"MFMessageComposeViewController"));
     return messageClass != nil && [messageClass canSendText];
@@ -138,9 +133,14 @@
                 }
             }
         }
-
-        // fire the composer
-        [self.viewController presentViewController:composeViewController animated:YES completion:nil];
+        
+        if([NSThread isMainThread]) {
+            [self.viewController presentViewController:composeViewController animated:YES completion:nil];
+        }else {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [self.viewController presentViewController:composeViewController animated:YES completion:nil];
+            });
+        }        
     }];
     
 }
