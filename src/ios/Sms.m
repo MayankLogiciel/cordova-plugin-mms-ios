@@ -107,40 +107,45 @@
         // parse the attachments
         NSArray *attachments = [options objectForKey:@"attachments"];
             
-        // initialize the composer
-        MFMessageComposeViewController *composeViewController = [[MFMessageComposeViewController alloc] init];
-        composeViewController.messageComposeDelegate = self;
-
-        // add recipients
-        [composeViewController setRecipients:recipients];
-        
-        // append the body to the composer
-        if ((id)body != [NSNull null]) {
-            [composeViewController setBody:body];
-        }
-
-        // append attachments
-        if (attachments != nil && [attachments count] > 0) {
-            if(![self areAttachmentsAvailable]) {
-                CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"MMS_NOT_AVAILABLE"];
-                return [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackID];
-            }
+        // This change dome by tajinder on 25/11/2021
+        // In IOS 15 Sms plugin was not working, app crashed when send function called
+        dispatch_async(dispatch_get_main_queue(), ^{
             
-            for (id attachment in attachments) {
-                NSURL *file = [self getFile:attachment];
-                if (file != nil) {
-                    [composeViewController addAttachmentURL:file withAlternateFilename:nil];
+            // initialize the composer
+            MFMessageComposeViewController *composeViewController = [[MFMessageComposeViewController alloc] init];
+            composeViewController.messageComposeDelegate = self;
+
+            // add recipients
+            [composeViewController setRecipients:recipients];
+
+            // append the body to the composer
+            if ((id)body != [NSNull null]) {
+                [composeViewController setBody:body];
+            }
+
+            // append attachments
+            if (attachments != nil && [attachments count] > 0) {
+                if(![self areAttachmentsAvailable]) {
+                    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"MMS_NOT_AVAILABLE"];
+                    return [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackID];
+                }
+
+                for (id attachment in attachments) {
+                    NSURL *file = [self getFile:attachment];
+                    if (file != nil) {
+                        [composeViewController addAttachmentURL:file withAlternateFilename:nil];
+                    }
                 }
             }
-        }
-        
-        if([NSThread isMainThread]) {
-            [self.viewController presentViewController:composeViewController animated:YES completion:nil];
-        }else {
-            dispatch_sync(dispatch_get_main_queue(), ^{
+
+            if([NSThread isMainThread]) {
                 [self.viewController presentViewController:composeViewController animated:YES completion:nil];
-            });
-        }        
+            }else {
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    [self.viewController presentViewController:composeViewController animated:YES completion:nil];
+                });
+            }
+        }); 
     }];
     
 }
