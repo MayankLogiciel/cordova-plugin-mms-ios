@@ -33,7 +33,7 @@
   "author": "Didier Baquier",
   "license": "MIT",
   "bugs": {
-     "url": "https://github.com/cordova-sms/com.cordova.plugins.sms/issues"
+     "url": "https://github.com/MayankLogiciel/cordova-plugin-mms-ios/issues"
   },
-  "homepage": "https://github.com/cordova-sms/com.cordova.plugins.sms#readme"
+  "homepage": "https://github.com/MayankLogiciel/cordova-plugin-mms-ios"
 }
